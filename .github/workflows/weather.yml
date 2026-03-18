@@ -1,0 +1,30 @@
+name: Weather Bot
+
+on:
+  schedule:
+    # 每天 8:00, 11:00, 14:00, 17:00, 20:00 (UTC时间，需要换算)
+    - cron: '0 0 * * *'   # 8:00 CST
+    - cron: '0 3 * * *'   # 11:00 CST
+    - cron: '0 6 * * *'   # 14:00 CST
+    - cron: '0 9 * * *'   # 17:00 CST
+    - cron: '0 12 * * *'  # 20:00 CST
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  run-weather-bot:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Run weather bot
+      env:
+        SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+      run: |
+        python weather_bot.py
