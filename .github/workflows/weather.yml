@@ -2,39 +2,38 @@ name: Weather Bot
 
 on:
   schedule:
-    # 每天 8:00, 11:00, 14:00, 17:00, 20:00 (UTC+8)
-    - cron: '0 0 * * *'   # 8:00 CST
-    - cron: '0 3 * * *'   # 11:00 CST
-    - cron: '0 6 * * *'   # 14:00 CST
-    - cron: '0 9 * * *'   # 17:00 CST
-    - cron: '0 12 * * *'  # 20:00 CST
-  workflow_dispatch:  # 允许手动触发
+    - cron: '0 0 * * *'    # 8:00
+    - cron: '0 3 * * *'    # 11:00
+    - cron: '0 6 * * *'    # 14:00
+    - cron: '0 9 * * *'    # 17:00
+    - cron: '0 12 * * *'   # 20:00
+  workflow_dispatch:
 
 jobs:
   run-weather-bot:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Check end date
-      run: |
-        END_DATE="2026-03-29"
-        TODAY=$(date +%Y-%m-%d)
-        if [[ "$TODAY" > "$END_DATE" ]]; then
-          echo "已过结束日期(3月28日)，停止执行"
-          exit 0
-        fi
-        echo "当前日期: $TODAY，继续执行"
+      - name: Check end date
+        run: |
+          END_DATE="2026-03-29"
+          TODAY=$(TZ='Asia/Shanghai' date +%Y-%m-%d)
+          if [[ "$TODAY" >= "$END_DATE" ]]; then
+            echo "已过结束日期 (3 月 28 日)，停止执行"
+            exit 0
+          fi
+          echo "当前日期 (北京时间): $TODAY，继续执行"
       
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
         
-    - name: Run weather bot
-      env:
-        SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
-      run: |
-        python weather_bot.py
+      - name: Run weather bot
+        env:
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+        run: |
+          python weather_bot.py
